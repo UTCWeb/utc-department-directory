@@ -7,6 +7,14 @@ Author:      Jeff Starr
 Version:     1.1
 */
 
+
+// disable direct file access
+if ( ! defined( 'ABSPATH' ) ) {
+	
+	exit;
+	
+}
+
  // example: GET request
  function http_get_request( $url ) {
 
@@ -18,16 +26,12 @@ Version:     1.1
 
 }
 
-
-
 // example: GET response
 function http_get_response() {
 
     $url = 'https://www.utc.edu/json/departmentdirectory';
 
     $response = http_get_request( $url );
-
-
 
     // response data
 
@@ -40,17 +44,15 @@ function http_get_response() {
     $header_type  = wp_remote_retrieve_header( $response, 'content-type' );
     $header_cache = wp_remote_retrieve_header( $response, 'cache-control' );
 
-
-
     // output data
 
-    $output  = '<h2><code>'. $url .'</code></h2>';
+    // $output  = '<h2><code>'. $url .'</code></h2>';
 
     // $output .= '<h3>Status</h3>';
     // $output .= '<div>Response Code: '    . $code    .'</div>';
     // $output .= '<div>Response Message: ' . $message .'</div>';
 
-    $output .= '<h3>Body</h3>';
+    // $output .= '<h3>Body</h3>';
     $output .= '<pre>';
     ob_start();
     // var_dump( $body );
@@ -61,9 +63,9 @@ function http_get_response() {
     // var_dump( $api_response[0]['info'][0]['value'] );
     $output .= '</pre>';
     $output .= '<h3>Department</h3>';
-    $output .= '<div>Response Date: ' . $api_response[0]['info'][0]['value']  .'</div>';
-    $output .= '<div>Content Type: '  . $api_response[0]['field_utc_organizational_section'][0]['target_id']  .'</div>';
-    $output .= '<div>Cache Control: ' . $api_response[0]['field_utc_department_mail_code'][0]['value'] .'</div>';
+    $output .= '<div>Organizational Section name ' . $api_response[0]['info'][0]['value']  .'</div>';
+    $output .= '<div>Organizational Section ID '  . $api_response[0]['field_utc_organizational_section'][0]['target_id']  .'</div>';
+    $output .= '<div>Organizational Section mail code ' . $api_response[0]['field_utc_department_mail_code'][0]['value'] .'</div>';
 
     $api_reponse_size = count($api_response);
     $organization_array = array();
@@ -75,8 +77,6 @@ function http_get_response() {
         $organization_array[$index]['OrganizationalSectionID'] = $api_response[$index]['field_utc_organizational_section'][0]['target_id'];
     }
     $output .= '<pre>';
-
-
 
     // $output .= '<h3>Headers</h3>';
     // $output .= '<div>Response Date: ' . $header_date  .'</div>';
@@ -92,6 +92,72 @@ function http_get_response() {
     return $organizational_output;
 
 }
+
+// example: GET response
+function public_http_get_response($organizationalSectionID) {
+
+    $url = 'https://www.utc.edu/json/departmentdirectory'. '/' . $organizationalSectionID ;
+
+    $response = http_get_request( $url );
+
+    // response data
+
+    $code    = wp_remote_retrieve_response_code( $response );
+    $message = wp_remote_retrieve_response_message( $response );
+    $body    = wp_remote_retrieve_body( $response );
+    $headers = wp_remote_retrieve_headers( $response );
+
+    $header_date  = wp_remote_retrieve_header( $response, 'date' );
+    $header_type  = wp_remote_retrieve_header( $response, 'content-type' );
+    $header_cache = wp_remote_retrieve_header( $response, 'cache-control' );
+    
+    // output data
+
+    // $output  = '<h2><code>'. $url .'</code></h2>';
+
+    // $output .= '<h3>Status</h3>';
+    // $output .= '<div>Response Code: '    . $code    .'</div>';
+    // $output .= '<div>Response Message: ' . $message .'</div>';
+
+    // $output .= '<h3>Body</h3>';
+    // $output .= '<pre>';
+    ob_start();
+    // var_dump( $body );
+    $output .= ob_get_clean();
+    /* Will result in $api_response being an array of data,
+    parsed from the JSON response of the API listed above */
+    $api_response = json_decode( $body, true );
+    // var_dump( $api_response[0]['info'][0]['value'] );
+    $output .= '</pre>';
+    $output .= '<h3>Department from the public side api</h3>';
+    $output .= '<div>Organizational Section: ' . $api_response[0]['info'][0]['value']  .'</div>';
+    $output .= '<div>Organizational Section ID: '  . $api_response[0]['field_utc_organizational_section'][0]['target_id']  .'</div>';
+    $output .= '<div>Organizational Section mail code: ' . $api_response[0]['field_utc_department_mail_code'][0]['value'] .'</div>';
+
+    $api_reponse_size = count($api_response);
+    $organization_array = array();
+    $organization_output= [];
+    foreach($api_response as $index => $organization)
+    {
+        // organization_array = array($api_response[$index]['info'][0]['value'],;
+        $organization_array[$index]['name'] = $api_response[$index]['info'][0]['value'];
+        $organization_array[$index]['OrganizationalSectionID'] = $api_response[$index]['field_utc_organizational_section'][0]['target_id'];
+    }
+    $output .= '<pre>';
+
+    // $output .= '<h3>Headers</h3>';
+    // $output .= '<div>Response Date: ' . $header_date  .'</div>';
+    // $output .= '<div>Content Type: '  . $header_type  .'</div>';
+    // $output .= '<div>Cache Control: ' . $header_cache .'</div>';
+    // $output .= '<pre>';
+    ob_start();
+    // var_dump( $headers );
+    $output .= ob_get_clean();
+    $output .= '</pre>';
+    return $output;
+
+}
+
 
 
 // widget example: clean markup
@@ -116,11 +182,13 @@ class Clean_Markup_Widget extends WP_Widget {
 
 		// extract( $args );
         // echo http_get_response();
-		$markup = '';
+        $markup = '';
 
 		if ( isset( $instance['markup'] ) ) {
-
+            
+            echo public_http_get_response($instance['markup']);
             echo wp_kses_post( $instance['markup'] );
+            
 
 		}
 
@@ -183,11 +251,24 @@ class Clean_Markup_Widget extends WP_Widget {
 }
 
 // register widget
-function myplugin_register_widgets() {
+function utcdepartmentdirectory_register_widgets() {
 
 	register_widget( 'Clean_Markup_Widget' );
 
 }
-add_action( 'widgets_init', 'myplugin_register_widgets' );
+add_action( 'widgets_init', 'utcdepartmentdirectory_register_widgets' );
 
 
+// include plugin dependencies: admin and public
+// require_once plugin_dir_url( __FILE__ ) . 'includes/utcdepartmentdirectorycore-functions.php';
+
+function themeslug_enqueue_style() {
+    wp_enqueue_style( 'utcdepartmentdirectory-public', plugin_dir_url(dirname(__FILE__)) . 'public/js/utcdepartmentdirectory.css', false );
+}
+ 
+function themeslug_enqueue_script() {
+    wp_enqueue_script( 'utcdepartmentdirectory-public', plugin_dir_url(dirname(__FILE__)) . 'public/js/utcdepartmentdirectory.js', false );
+}
+ 
+add_action( 'wp_enqueue_scripts', 'themeslug_enqueue_style' );
+add_action( 'wp_enqueue_scripts', 'themeslug_enqueue_script' );
