@@ -11,7 +11,7 @@ const fontFamily = require("./tokens/font-family.tailwind");
 /** @type {import('tailwindcss').Config} */
 module.exports = {
     content: [
-        "./src/**/*.{html,js,php}",
+        "./src/**/*.{html,js,php,twig}",
         "./utc-clean-markup-widget.php"
     ],
     theme: {

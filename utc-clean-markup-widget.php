@@ -52,30 +52,16 @@ function http_get_response() {
     $header_type  = wp_remote_retrieve_header( $response, 'content-type' );
     $header_cache = wp_remote_retrieve_header( $response, 'cache-control' );
 
-    // output data
-
-    // $output  = '<h2><code>'. $url .'</code></h2>';
-
-    // $output .= '<h3>Status</h3>';
-    // $output .= '<div>Response Code: '    . $code    .'</div>';
-    // $output .= '<div>Response Message: ' . $message .'</div>';
-
-    // $output .= '<h3>Body</h3>';
-    $output .= '<pre>';
-    ob_start();
-    // var_dump( $body );
-    $output .= ob_get_clean();
     /* Will result in $api_response being an array of data,
     parsed from the JSON response of the API listed above */
     $api_response = json_decode( $body, true );
     // var_dump( $api_response[0]['info'][0]['value'] );
     $output .= '</pre>';
-    $output .= '<h3>Department</h3>';
-    $output .= '<div>Organizational Section name ' . $api_response[0]['info'][0]['value']  .'</div>';
-    $output .= '<div>Organizational Section ID '  . $api_response[0]['field_utc_organizational_section'][0]['target_id']  .'</div>';
-    $output .= '<div>Organizational Section mail code ' . $api_response[0]['field_utc_department_mail_code'][0]['value'] .'</div>';
-
-    $api_reponse_size = count($api_response);
+    $output .= '<h3>Select the organizational section</h3>';
+    // $output .= '<div>Organizational Section name ' . $api_response[0]['info'][0]['value']  .'</div>';
+    // $output .= '<div>Organizational Section ID '  . $api_response[0]['field_utc_organizational_section'][0]['target_id']  .'</div>';
+    // $output .= '<div>Organizational Section mail code ' . $api_response[0]['field_utc_department_mail_code'][0]['value'] .'</div>';
+    $output .= '<div>This list includes ' . count($api_response) .' organizational sections</div>';
     $organization_array = array();
     $organization_output= [];
     foreach($api_response as $index => $organization)
@@ -86,11 +72,6 @@ function http_get_response() {
     }
     $output .= '<pre>';
 
-    // $output .= '<h3>Headers</h3>';
-    // $output .= '<div>Response Date: ' . $header_date  .'</div>';
-    // $output .= '<div>Content Type: '  . $header_type  .'</div>';
-    // $output .= '<div>Cache Control: ' . $header_cache .'</div>';
-    // $output .= '<pre>';
     ob_start();
     // var_dump( $headers );
     $output .= ob_get_clean();
@@ -109,37 +90,13 @@ function public_http_get_response($organizationalSectionID) {
     $response = http_get_request( $url );
 
     // response data
-
-    $code    = wp_remote_retrieve_response_code( $response );
-    $message = wp_remote_retrieve_response_message( $response );
     $body    = wp_remote_retrieve_body( $response );
-    $headers = wp_remote_retrieve_headers( $response );
-
-    $header_date  = wp_remote_retrieve_header( $response, 'date' );
-    $header_type  = wp_remote_retrieve_header( $response, 'content-type' );
-    $header_cache = wp_remote_retrieve_header( $response, 'cache-control' );
     
-
-
-
-    // output data
-
-    // $output  = '<h2><code>'. $url .'</code></h2>';
-
-    // $output .= '<h3>Status</h3>';
-    // $output .= '<div>Response Code: '    . $code    .'</div>';
-    // $output .= '<div>Response Message: ' . $message .'</div>';
-
-    // $output .= '<h3>Body</h3>';
-    // $output .= '<pre>';
-    ob_start();
-    // var_dump( $body );
-    $output .= ob_get_clean();
     /* Will result in $api_response being an array of data,
     parsed from the JSON response of the API listed above */
     $api_response = json_decode( $body, true );
 
-    $loader = new FilesystemLoader(__DIR__ . '/templates');
+    $loader = new FilesystemLoader(__DIR__ . '/src/templates');
     $twig = new Environment($loader);
     echo $twig->render('departmentinfo.html.twig', 
     [
@@ -149,8 +106,8 @@ function public_http_get_response($organizationalSectionID) {
         'phonenumber' => $api_response[0]['field_utc_department_phone'][0]['value'],
         'phonenumber' => $api_response[0]['field_utc_department_fax_number'][0]['value'],
         'buildingtitle' => $api_response[0]['field_utc_department_building'][0]['title'],
-        'buildingurl' => $api_response[0]['field_utc_department_building'][0]['value'],
-        'address' => $api_response[0]['field_utc_department_street_addr'][0]['value'],
+        'buildinguri' => $api_response[0]['field_utc_department_building'][0]['uri'],
+        'address' => $api_response[0]['field_utc_department_street_addr'][0]['title'],
         'facebook' => $api_response[0]['field_utc_department_socialmedia'][0]['platform_values']['facebook']['value'],
         'instagram' => $api_response[0]['field_utc_department_socialmedia'][0]['platform_values']['instagram']['value'],
         'twitter' => $api_response[0]['field_utc_department_socialmedia'][0]['platform_values']['twitter']['value'],
@@ -160,13 +117,7 @@ function public_http_get_response($organizationalSectionID) {
         'vimeo' => $api_response[0]['field_utc_department_socialmedia'][0]['platform_values']['departamental_homepage']['value']       
     
     ]);
-
-
-    ob_start();
-    // var_dump( $headers );
-    $output .= ob_get_clean();
-    $output .= '</pre>';
-    return $output;
+    return;
 
 }
 
@@ -199,7 +150,7 @@ class Clean_Markup_Widget extends WP_Widget {
 		if ( isset( $instance['markup'] ) ) {
             
             echo public_http_get_response($instance['markup']);
-            echo wp_kses_post( $instance['markup'] );
+            // echo wp_kses_post( $instance['markup'] );
             
 
 		}
