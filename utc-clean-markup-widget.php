@@ -15,6 +15,14 @@ if ( ! defined( 'ABSPATH' ) ) {
 	
 }
 
+
+require __DIR__ . '/vendor/autoload.php';
+use Twig\Environment;
+use Twig\Loader\FilesystemLoader;
+
+
+
+
  // example: GET request
  function http_get_request( $url ) {
 
@@ -111,6 +119,9 @@ function public_http_get_response($organizationalSectionID) {
     $header_type  = wp_remote_retrieve_header( $response, 'content-type' );
     $header_cache = wp_remote_retrieve_header( $response, 'cache-control' );
     
+
+
+
     // output data
 
     // $output  = '<h2><code>'. $url .'</code></h2>';
@@ -127,29 +138,30 @@ function public_http_get_response($organizationalSectionID) {
     /* Will result in $api_response being an array of data,
     parsed from the JSON response of the API listed above */
     $api_response = json_decode( $body, true );
-    // var_dump( $api_response[0]['info'][0]['value'] );
-    $output .= '</pre>';
-    $output .= '<h3>Department from the public side api</h3>';
-    $output .= '<div>Organizational Section: ' . $api_response[0]['info'][0]['value']  .'</div>';
-    $output .= '<div>Organizational Section ID: '  . $api_response[0]['field_utc_organizational_section'][0]['target_id']  .'</div>';
-    $output .= '<div>Organizational Section mail code: ' . $api_response[0]['field_utc_department_mail_code'][0]['value'] .'</div>';
 
-    $api_reponse_size = count($api_response);
-    $organization_array = array();
-    $organization_output= [];
-    foreach($api_response as $index => $organization)
-    {
-        // organization_array = array($api_response[$index]['info'][0]['value'],;
-        $organization_array[$index]['name'] = $api_response[$index]['info'][0]['value'];
-        $organization_array[$index]['OrganizationalSectionID'] = $api_response[$index]['field_utc_organizational_section'][0]['target_id'];
-    }
-    $output .= '<pre>';
+    $loader = new FilesystemLoader(__DIR__ . '/templates');
+    $twig = new Environment($loader);
+    echo $twig->render('departmentinfo.html.twig', 
+    [
+        'name' => $api_response[0]['info'][0]['value'], 
+        'taxonomyid' => $api_response[0]['field_utc_organizational_section'][0]['target_id'],
+        'mailcode' => $api_response[0]['field_utc_department_mail_code'][0]['value'],
+        'phonenumber' => $api_response[0]['field_utc_department_phone'][0]['value'],
+        'phonenumber' => $api_response[0]['field_utc_department_fax_number'][0]['value'],
+        'buildingtitle' => $api_response[0]['field_utc_department_building'][0]['title'],
+        'buildingurl' => $api_response[0]['field_utc_department_building'][0]['value'],
+        'address' => $api_response[0]['field_utc_department_street_addr'][0]['value'],
+        'facebook' => $api_response[0]['field_utc_department_socialmedia'][0]['platform_values']['facebook']['value'],
+        'instagram' => $api_response[0]['field_utc_department_socialmedia'][0]['platform_values']['instagram']['value'],
+        'twitter' => $api_response[0]['field_utc_department_socialmedia'][0]['platform_values']['twitter']['value'],
+        'youtube' => $api_response[0]['field_utc_department_socialmedia'][0]['platform_values']['youtube']['value'],
+        'linkedin' => $api_response[0]['field_utc_department_socialmedia'][0]['platform_values']['linkedin']['value'],
+        'homepage' => $api_response[0]['field_utc_department_socialmedia'][0]['platform_values']['departamental_homepage']['value'],
+        'vimeo' => $api_response[0]['field_utc_department_socialmedia'][0]['platform_values']['departamental_homepage']['value']       
+    
+    ]);
 
-    // $output .= '<h3>Headers</h3>';
-    // $output .= '<div>Response Date: ' . $header_date  .'</div>';
-    // $output .= '<div>Content Type: '  . $header_type  .'</div>';
-    // $output .= '<div>Cache Control: ' . $header_cache .'</div>';
-    // $output .= '<pre>';
+
     ob_start();
     // var_dump( $headers );
     $output .= ob_get_clean();
@@ -263,11 +275,11 @@ add_action( 'widgets_init', 'utcdepartmentdirectory_register_widgets' );
 // require_once plugin_dir_url( __FILE__ ) . 'includes/utcdepartmentdirectorycore-functions.php';
 
 function themeslug_enqueue_style() {
-    wp_enqueue_style( 'utcdepartmentdirectory-public', plugin_dir_url(dirname(__FILE__)) . 'public/js/utcdepartmentdirectory.css', false );
+    wp_enqueue_style( 'utcdepartmentdirectory-public', plugin_dir_url(dirname(__FILE__)) . 'utcdepartmentdirectory/dist/output.css', false );
 }
  
 function themeslug_enqueue_script() {
-    wp_enqueue_script( 'utcdepartmentdirectory-public', plugin_dir_url(dirname(__FILE__)) . 'public/js/utcdepartmentdirectory.js', false );
+    wp_enqueue_script( 'utcdepartmentdirectory-public', plugin_dir_url(dirname(__FILE__)) . 'utcdepartmentdirectory/public/js/utcdepartmentdirectory.js', false );
 }
  
 add_action( 'wp_enqueue_scripts', 'themeslug_enqueue_style' );

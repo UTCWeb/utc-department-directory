@@ -1,0 +1,8 @@
+{
+    "sans": ["Roboto, sans-serif"],
+    "serif": ["Baskervville, Times New Roman, serif"],
+    "mono": ["Source Code Pro, Courier New, monospace"],
+    "utcbody": ["Roboto, sans-serif"],
+    "utcheadings": ["Oswald, sans-serif"],
+    "utcquote": ["Georgia, serif"]
+}
