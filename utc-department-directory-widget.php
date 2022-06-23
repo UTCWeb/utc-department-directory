@@ -12,8 +12,10 @@ Version:     1.3
 if (! defined('ABSPATH')) {
     exit;
 }
-
-
+/**
+ * Adds twig integration and needed files
+ *
+ */
 require __DIR__ . '/vendor/autoload.php';
 use Twig\Environment;
 use Twig\Loader\FilesystemLoader;
@@ -27,53 +29,48 @@ function http_get_request($url)
 
     return wp_safe_remote_get($url, $args);
 }
-
-// example: GET response
-function http_get_response()
+/**
+ * Admin function, gets all UTC departments(Organizatioanl sections)
+ *
+ */
+function admin_http_get_response()
 {
     $url = 'https://www.utc.edu/json/departmentdirectory';
 
     $response = http_get_request($url);
 
     // response data
-
-    $code    = wp_remote_retrieve_response_code($response);
-    $message = wp_remote_retrieve_response_message($response);
     $body    = wp_remote_retrieve_body($response);
-    $headers = wp_remote_retrieve_headers($response);
-
-    $header_date  = wp_remote_retrieve_header($response, 'date');
-    $header_type  = wp_remote_retrieve_header($response, 'content-type');
-    $header_cache = wp_remote_retrieve_header($response, 'cache-control');
-
     /* Will result in $api_response being an array of data,
     parsed from the JSON response of the API listed above */
     $api_response = json_decode($body, true);
-    // var_dump( $api_response[0]['info'][0]['value'] );
-    $output .= '</pre>';
-    // $output .= '<div>Organizational Section name ' . $api_response[0]['info'][0]['value']  .'</div>';
-    // $output .= '<div>Organizational Section ID '  . $api_response[0]['field_utc_organizational_section'][0]['target_id']  .'</div>';
-    // $output .= '<div>Organizational Section mail code ' . $api_response[0]['field_utc_department_mail_code'][0]['value'] .'</div>';
-    $output .= '<div>This list includes ' . count($api_response) .' organizational sections</div>';
     $organization_array = array();
     $organization_output= [];
+    if (count($api_response)==0) {
+        $output .= '<div> The plugin can not fetch the data at the moment. Make sure https://www.utc.edu/json/departmentdirectory is reachable </div>';
+        $organizational_output[0] = $output;
+        $organizational_output[1] = null;
+
+        return $organizational_output;
+    }
+    $output .= '<div>'. count($api_response) .' organizational sections are listed</div>';
+    
     foreach ($api_response as $index => $organization) {
-        // organization_array = array($api_response[$index]['info'][0]['value'],;
         $organization_array[$index]['name'] = $api_response[$index]['info'][0]['value'];
         $organization_array[$index]['OrganizationalSectionID'] = $api_response[$index]['field_utc_organizational_section'][0]['target_id'];
     }
-    $output .= '<pre>';
-
     ob_start();
-    // var_dump( $headers );
     $output .= ob_get_clean();
-    $output .= '</pre>';
     $organizational_output[0] = $output;
     $organizational_output[1] = $organization_array;
     return $organizational_output;
 }
 
-// example: GET response
+/**
+ * Public function, gets one UTC department(Organizatioanl sections)
+ *
+ */
+// TODO Refactor this class and the admin one.
 function public_http_get_response($organizationalSectionID)
 {
     $url = 'https://www.utc.edu/json/departmentdirectory'. '/' . $organizationalSectionID ;
@@ -87,6 +84,7 @@ function public_http_get_response($organizationalSectionID)
     parsed from the JSON response of the API listed above */
     $api_response = json_decode($body, true);
 
+    // Adds a twig template and pipes the $api_response variables to it
     $loader = new FilesystemLoader(__DIR__ . '/src/templates');
     $twig = new Environment($loader);
     echo $twig->render(
@@ -113,6 +111,10 @@ function public_http_get_response($organizationalSectionID)
     return;
 }
 
+/**
+ * Extendeds the Wordpress widget class
+ *
+ */
 class UTCDepartment_Directory_Widget extends WP_Widget
 {
     public function __construct()
@@ -131,11 +133,7 @@ class UTCDepartment_Directory_Widget extends WP_Widget
 
     public function widget($args, $instance)
     {
-
-        // extract( $args );
-        // echo http_get_response();
         $organizationalsection = '';
-
         if (isset($instance['organizationalsection'])) {
             echo public_http_get_response($instance['organizationalsection']);
             // echo wp_kses_post( $instance['organizationalsection'] );
@@ -165,9 +163,8 @@ class UTCDepartment_Directory_Widget extends WP_Widget
 
         $organizationalsection = '<p>'. __('Contact information for any UTC organizational sections.', 'custom-widget') .'</p>';
         
-        // echo http_get_response();
         $data = [];
-        $data = http_get_response();
+        $data = admin_http_get_response();
         echo $data[0];
 
         if (isset($instance['organizationalsection']) && ! empty($instance['organizationalsection'])) {
@@ -179,7 +176,7 @@ class UTCDepartment_Directory_Widget extends WP_Widget
             <label for="<?php echo esc_attr($for); ?>"><?php echo esc_html($label); ?></label>
             <select class="widefat" id="<?php echo esc_attr($id); ?>" name="<?php echo esc_attr($name); ?>">
             <?php foreach ($data[1] as $index=>$row) { ?>
-            <option value="<?php echo $row["OrganizationalSectionID"] ?>"<?php selected($valuesselected["name"], $row["OrganizationalSectionID"]); ?>><?php echo $row["name"] ?></option> <?php 
+            <option value="<?php echo $row["OrganizationalSectionID"] ?>"<?php selected($valuesselected["name"], $row["OrganizationalSectionID"]); ?>><?php echo $row["name"] ?></option> <?php
             } ?>
             </select>
             <?php $organizationalsection = $valuesselected[0]; ?>
@@ -198,18 +195,24 @@ function utcdepartmentdirectory_register_widgets()
 }
 add_action('widgets_init', 'utcdepartmentdirectory_register_widgets');
 
-
+// TODO Add the following functiuons in a separate file
 // include plugin dependencies: admin and public
 // require_once plugin_dir_url( __FILE__ ) . 'includes/utcdepartmentdirectorycore-functions.php';
 
+/**
+ * Adds javascript and CSS to the plugin.
+ *
+ */
+// require get_template_directory() . 'includes/utcdepartmentdirectorycore-functions.php';
+
 function utcdepartmentdirectory_enqueue_style()
 {
-    wp_enqueue_style('utcdepartmentdirectory-public', plugin_dir_url(dirname(__FILE__)) . 'utcdepartmentdirectory/dist/output.css', false);
+    wp_enqueue_style('utcdepartmentdirectory-public', plugin_dir_url(dirname(__FILE__)) . 'utc-department-directory/dist/output.css', false);
 }
  
 function utcdepartmentdirectory_enqueue_script()
 {
-    wp_enqueue_script('utcdepartmentdirectory-public', plugin_dir_url(dirname(__FILE__)) . 'utcdepartmentdirectory/dist/utcdepartmentdirectory.js', false);
+    wp_enqueue_script('utcdepartmentdirectory-public', plugin_dir_url(dirname(__FILE__)) . 'utc-department-directory/dist/utcdepartmentdirectory.js', false);
 }
  
 add_action('wp_enqueue_scripts', 'utcdepartmentdirectory_enqueue_style');
