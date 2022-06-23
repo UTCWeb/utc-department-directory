@@ -8,7 +8,10 @@
     },
     "scripts": {
         "phpcs": [
-            "\"vendor/bin/phpcs\" --standard=WordPress utc-clean-markup-widget.php"
+            "\"vendor/bin/phpcs\" --standard=WordPress utc-department-directory-widget.php"
+        ],
+        "phpcbf": [
+            "\"vendor/bin/phpcbf\" --standard=WordPress utc-department-directory-widget.php"
         ],
         "post-install-cmd": [
             "\"vendor/bin/phpcs\" --config-set installed_paths vendor/wp-coding-standards/wpcs"
