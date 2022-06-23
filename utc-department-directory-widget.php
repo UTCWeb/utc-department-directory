@@ -19,14 +19,14 @@ use Twig\Environment;
 use Twig\Loader\FilesystemLoader;
 
 // example: GET request
- function http_get_request($url)
- {
-     $url = esc_url_raw($url);
+function http_get_request($url)
+{
+    $url = esc_url_raw($url);
 
-     $args = array( 'user-agent' => 'Plugin Demo: HTTP API; '. home_url() );
+    $args = array( 'user-agent' => 'UTC Department info Plugin: HTTP API; '. home_url() );
 
-     return wp_safe_remote_get($url, $args);
- }
+    return wp_safe_remote_get($url, $args);
+}
 
 // example: GET response
 function http_get_response()
@@ -51,7 +51,6 @@ function http_get_response()
     $api_response = json_decode($body, true);
     // var_dump( $api_response[0]['info'][0]['value'] );
     $output .= '</pre>';
-    $output .= '<h3>Select the organizational section</h3>';
     // $output .= '<div>Organizational Section name ' . $api_response[0]['info'][0]['value']  .'</div>';
     // $output .= '<div>Organizational Section ID '  . $api_response[0]['field_utc_organizational_section'][0]['target_id']  .'</div>';
     // $output .= '<div>Organizational Section mail code ' . $api_response[0]['field_utc_department_mail_code'][0]['value'] .'</div>';
@@ -109,25 +108,22 @@ function public_http_get_response($organizationalSectionID)
         'homepage' => $api_response[0]['field_utc_department_socialmedia'][0]['platform_values']['departamental_homepage']['value'],
         'vimeo' => $api_response[0]['field_utc_department_socialmedia'][0]['platform_values']['departamental_homepage']['value']
     
-    ]
+        ]
     );
     return;
 }
 
-
-
-// widget example: clean markup
 class UTCDepartment_Directory_Widget extends WP_Widget
 {
     public function __construct()
     {
-        $id = 'clean_markup_widget';
+        $id = 'utcdepartment_directory_widget';
 
-        $title = esc_html__('Clean Markup Widget', 'custom-widget');
+        $title = esc_html__('UTC Department Directory Widget', 'custom-widget');
 
         $options = array(
-            'classname' => 'clean-markup-widget',
-            'description' => esc_html__('Adds clean markup that is not modified by WordPress.', 'custom-widget')
+            'classname' => 'utcdepartment_directory_widget',
+            'description' => esc_html__('Adds a Department\'s contact information that is fed by a UTC.edu Drupal JSON API', 'custom-widget')
         );
 
         parent::__construct($id, $title, $options);
@@ -138,11 +134,11 @@ class UTCDepartment_Directory_Widget extends WP_Widget
 
         // extract( $args );
         // echo http_get_response();
-        $markup = '';
+        $organizationalsection = '';
 
-        if (isset($instance['markup'])) {
-            echo public_http_get_response($instance['markup']);
-            // echo wp_kses_post( $instance['markup'] );
+        if (isset($instance['organizationalsection'])) {
+            echo public_http_get_response($instance['organizationalsection']);
+            // echo wp_kses_post( $instance['organizationalsection'] );
         }
     }
 
@@ -150,8 +146,8 @@ class UTCDepartment_Directory_Widget extends WP_Widget
     {
         $instance = array();
 
-        if (isset($new_instance['markup']) && ! empty($new_instance['markup'])) {
-            $instance['markup'] = $new_instance['markup'];
+        if (isset($new_instance['organizationalsection']) && ! empty($new_instance['organizationalsection'])) {
+            $instance['organizationalsection'] = $new_instance['organizationalsection'];
         }
 
         return $instance;
@@ -159,40 +155,39 @@ class UTCDepartment_Directory_Widget extends WP_Widget
 
     public function form($instance)
     {
-        $id = $this->get_field_id('markup');
+        $id = $this->get_field_id('organizationalsection');
 
-        $for = $this->get_field_id('markup');
+        $for = $this->get_field_id('organizationalsection');
 
-        $name = $this->get_field_name('markup');
+        $name = $this->get_field_name('organizationalsection');
 
-        $label = __('Markup/text:', 'custom-widget');
-        
-        $label = __('Markup/text:', 'custom-widget');
+        $label = __('UTC Organizational Sections:', 'custom-widget');
 
-        $markup = '<p>'. __('Clean markup.', 'custom-widget') .'</p>';
+        $organizationalsection = '<p>'. __('Contact information for any UTC organizational sections.', 'custom-widget') .'</p>';
         
         // echo http_get_response();
         $data = [];
         $data = http_get_response();
         echo $data[0];
 
-        if (isset($instance['markup']) && ! empty($instance['markup'])) {
-            $markup = $instance['markup'];
+        if (isset($instance['organizationalsection']) && ! empty($instance['organizationalsection'])) {
+            $organizationalsection = $instance['organizationalsection'];
         }
         $valuesselected = []; ?>
 
-		<p>
-			<label for="<?php echo esc_attr($for); ?>"><?php echo esc_html($label); ?></label>
+        <p>
+            <label for="<?php echo esc_attr($for); ?>"><?php echo esc_html($label); ?></label>
             <select class="widefat" id="<?php echo esc_attr($id); ?>" name="<?php echo esc_attr($name); ?>">
             <?php foreach ($data[1] as $index=>$row) { ?>
-            <option value="<?= $row["OrganizationalSectionID"] ?>"<?php selected($valuesselected["name"], $row["OrganizationalSectionID"]); ?>><?= $row["name"] ?></option> <?php } ?>
+            <option value="<?php echo $row["OrganizationalSectionID"] ?>"<?php selected($valuesselected["name"], $row["OrganizationalSectionID"]); ?>><?php echo $row["name"] ?></option> <?php 
+            } ?>
             </select>
-            <?php $markup = $valuesselected[0]; ?>
-            <label for="<?php echo esc_attr($for); ?>"><?php echo $markup; ?></label>
+            <?php $organizationalsection = $valuesselected[0]; ?>
+            <label for="<?php echo esc_attr($for); ?>"><?php echo $organizationalsection; ?></label>
 
-		</p>
+        </p>
 
-<?php
+        <?php
     }
 }
 
@@ -207,15 +202,15 @@ add_action('widgets_init', 'utcdepartmentdirectory_register_widgets');
 // include plugin dependencies: admin and public
 // require_once plugin_dir_url( __FILE__ ) . 'includes/utcdepartmentdirectorycore-functions.php';
 
-function themeslug_enqueue_style()
+function utcdepartmentdirectory_enqueue_style()
 {
     wp_enqueue_style('utcdepartmentdirectory-public', plugin_dir_url(dirname(__FILE__)) . 'utcdepartmentdirectory/dist/output.css', false);
 }
  
-function themeslug_enqueue_script()
+function utcdepartmentdirectory_enqueue_script()
 {
     wp_enqueue_script('utcdepartmentdirectory-public', plugin_dir_url(dirname(__FILE__)) . 'utcdepartmentdirectory/dist/utcdepartmentdirectory.js', false);
 }
  
-add_action('wp_enqueue_scripts', 'themeslug_enqueue_style');
-add_action('wp_enqueue_scripts', 'themeslug_enqueue_script');
+add_action('wp_enqueue_scripts', 'utcdepartmentdirectory_enqueue_style');
+add_action('wp_enqueue_scripts', 'utcdepartmentdirectory_enqueue_script');
