@@ -1,4 +1,12 @@
 {
+    "name": "utc/utc-department-directory",
+    "description": "A custom plugin that takes advatange of Drupal API endpoints",
+    "license": "GPL-2.0",
+    "type": "wordpress-plugin",
+    "authors": [{
+        "name": "Bernardo Martinez",
+        "email": "bernardo-martinez@utc.edu"
+    }],
     "require": {
         "twig/twig": "^3.0"
     },
