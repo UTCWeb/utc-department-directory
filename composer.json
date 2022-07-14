@@ -8,12 +8,12 @@
         "email": "bernardo-martinez@utc.edu"
     }],
     "require": {
-        "twig/twig": "^3.0"
+        "twig/twig": "^3.0",
+        "composer/installers": "~1.0"
     },
     "require-dev": {
         "squizlabs/php_codesniffer": "^3.7",
-        "wp-coding-standards/wpcs": "^2.3",
-        "composer/installers": "~1.0"
+        "wp-coding-standards/wpcs": "^2.3"
     },
     "scripts": {
         "phpcs": [
