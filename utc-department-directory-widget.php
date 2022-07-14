@@ -16,7 +16,8 @@ if (! defined('ABSPATH')) {
  * Adds twig integration and needed files
  *
  */
-require __DIR__ . '/vendor/autoload.php';
+// auto load not needed in main plugin file?
+// require plugin_dir_path( __FILE__ ) . 'vendor/autoload.php';
 use Twig\Environment;
 use Twig\Loader\FilesystemLoader;
 
@@ -46,7 +47,7 @@ function admin_http_get_response()
     $api_response = json_decode($body, true);
     $organization_array = array();
     $organization_output= [];
-    if (count($api_response)==0) {
+    if (count($api_response) == 0) {
         $output .= '<div> The plugin can not fetch the data at the moment. Make sure https://www.utc.edu/json/departmentdirectory is reachable </div>';
         $organizational_output[0] = $output;
         $organizational_output[1] = null;
@@ -90,22 +91,21 @@ function public_http_get_response($organizationalSectionID)
     echo $twig->render(
         'departmentinfo.html.twig',
         [
-        'name' => $api_response[0]['info'][0]['value'],
-        'taxonomyid' => $api_response[0]['field_utc_organizational_section'][0]['target_id'],
-        'mailcode' => $api_response[0]['field_utc_department_mail_code'][0]['value'],
-        'phonenumber' => $api_response[0]['field_utc_department_phone'][0]['value'],
-        'phonenumber' => $api_response[0]['field_utc_department_fax_number'][0]['value'],
-        'buildingtitle' => $api_response[0]['field_utc_department_building'][0]['title'],
-        'buildinguri' => $api_response[0]['field_utc_department_building'][0]['uri'],
-        'address' => $api_response[0]['field_utc_department_street_addr'][0]['title'],
-        'facebook' => $api_response[0]['field_utc_department_socialmedia'][0]['platform_values']['facebook']['value'],
-        'instagram' => $api_response[0]['field_utc_department_socialmedia'][0]['platform_values']['instagram']['value'],
-        'twitter' => $api_response[0]['field_utc_department_socialmedia'][0]['platform_values']['twitter']['value'],
-        'youtube' => $api_response[0]['field_utc_department_socialmedia'][0]['platform_values']['youtube']['value'],
-        'linkedin' => $api_response[0]['field_utc_department_socialmedia'][0]['platform_values']['linkedin']['value'],
-        'homepage' => $api_response[0]['field_utc_department_socialmedia'][0]['platform_values']['departamental_homepage']['value'],
-        'vimeo' => $api_response[0]['field_utc_department_socialmedia'][0]['platform_values']['departamental_homepage']['value']
-    
+        'name' => isset($api_response[0]['info'][0]['value'])? $api_response[0]['info'][0]['value']: "empty",
+        'taxonomyid' => isset($api_response[0]['field_utc_organizational_section'][0]['target_id'])? $api_response[0]['field_utc_organizational_section'][0]['target_id']: "empty",
+        'mailcode' => isset($api_response[0]['field_utc_department_mail_code'][0]['value'])? $api_response[0]['field_utc_department_mail_code'][0]['value']: "empty",
+        'phonenumber' => isset($api_response[0]['field_utc_department_phone'][0]['value'])? $api_response[0]['field_utc_department_phone'][0]['value']: "empty",
+        'faxnumber' => isset($api_response[0]['field_utc_department_fax_number'][0]['value'])? $api_response[0]['info'][0]['value']: "empty",
+        'buildingtitle' => isset($api_response[0]['field_utc_department_building'][0]['title'])? $api_response[0]['info'][0]['value']: "empty",
+        'buildinguri' => isset($api_response[0]['field_utc_department_building'][0]['uri'])? $api_response[0]['info'][0]['value']: "empty",
+        'address' => isset($api_response[0]['field_utc_department_street_addr'][0]['title'])? $api_response[0]['info'][0]['value']: "empty",
+        'facebook' => isset($api_response[0]['field_utc_department_socialmedia'][0]['platform_values']['facebook']['value'])? $api_response[0]['info'][0]['value']: "empty",
+        'instagram' => isset($api_response[0]['field_utc_department_socialmedia'][0]['platform_values']['instagram']['value'])? $api_response[0]['info'][0]['value']: "empty",
+        'twitter' => isset($api_response[0]['field_utc_department_socialmedia'][0]['platform_values']['twitter']['value'])? $api_response[0]['info'][0]['value']: "empty",
+        'youtube' => isset($api_response[0]['field_utc_department_socialmedia'][0]['platform_values']['youtube']['value'])? $api_response[0]['info'][0]['value']: "empty",
+        'linkedin' => isset($api_response[0]['field_utc_department_socialmedia'][0]['platform_values']['linkedin']['value'])? $api_response[0]['field_utc_department_socialmedia'][0]['platform_values']['linkedin']['value']: "empty",
+        'homepage' => isset($api_response[0]['field_utc_department_socialmedia'][0]['platform_values']['departamental_homepage']['value'])? $api_response[0]['info'][0]['value']: "empty",
+        'vimeo' => isset($api_response[0]['field_utc_department_socialmedia'][0]['platform_values']['departamental_homepage']['value'])? $api_response[0]['info'][0]['value']: "empty"
         ]
     );
     return;
