@@ -88,7 +88,6 @@ function public_http_get_response($organizationalSectionID)
     // Adds a twig template and pipes the $api_response variables to it
     $loader = new FilesystemLoader(__DIR__ . '/src/templates');
     $twig = new Environment($loader);
-    var_dump($api_response[0]['field_utc_department_hours'][0]);
     echo $twig->render(
         'departmentinfo.html.twig',
         [
@@ -106,7 +105,7 @@ function public_http_get_response($organizationalSectionID)
         'youtube' => isset($api_response[0]['field_utc_department_socialmedia'][0]['platform_values']['youtube']['value'])? $api_response[0]['field_utc_department_socialmedia'][0]['platform_values']['youtube']['value']: "empty",
         'linkedin' => isset($api_response[0]['field_utc_department_socialmedia'][0]['platform_values']['linkedin']['value'])? $api_response[0]['field_utc_department_socialmedia'][0]['platform_values']['linkedin']['value']: "empty",
         'homepage' => isset($api_response[0]['field_utc_department_socialmedia'][0]['platform_values']['departamental_homepage']['value'])? $api_response[0]['field_utc_department_socialmedia'][0]['platform_values']['departamental_homepage']['value']: "empty",
-        'vimeo' => isset($api_response[0]['field_utc_department_socialmedia'][0]['platform_values']['departamental_homepage']['value'])?$api_response[0]['field_utc_department_socialmedia'][0]['platform_values']['departamental_homepage']['value']: "empty",
+        'vimeo' => isset($api_response[0]['field_utc_department_socialmedia'][0]['platform_values']['vimeo']['value'])?$api_response[0]['field_utc_department_socialmedia'][0]['platform_values']['vimeo']['value']: "empty",
         'officehours' => !empty($api_response[0]['field_utc_department_hours'])? $api_response[0]['field_utc_department_hours']: "empty"
         ]
     );
