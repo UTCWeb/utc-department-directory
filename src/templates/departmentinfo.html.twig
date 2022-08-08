@@ -4,7 +4,7 @@
 		<address class="flex-list not-italic text-lg">
 			{% if buildingtitle != "empty" %}
 				<div id="dpt-building" class="utc-dpt dpt-building separate">
-					<a href="{{buildinguri}}" title="{{buildingtitle}}" class="hover:bg-white hover:text-utc-blue-700">{{buildingtitle}}</a>
+					<a title="{{buildingtitle}}" class="hover:bg-white hover:text-utc-blue-700">{{buildingtitle}}</a>
 				</div>
 			{% endif %}
 			{% if mailcode != "empty" %}
@@ -35,29 +35,49 @@
 		<ul class="inline horizontal">
 			{% if homepage != "empty" %}
 				<li class="inline horizontal px-2">
-					<a class="text-utc-blue-500 hover:text-utc-gold-500" href={{homepage}} target="_self" aria-label="Go to our departmental homepage" title="Go to our departmental homepage">
+					<a class="text-utc-blue-500 hover:text-utc-gold-500" href={{'https://www.utc.edu/'+ homepage}} target="_self" aria-label="Go to our departmental homepage" title="Go to our departmental homepage">
+						<span class="fa fa-home fa-2x"></span>
+					</a>
+				</li>
+			{% endif %}
+			{% if blog != "empty" %}
+				<li class="inline horizontal px-2">
+					<a class="text-utc-blue-500 hover:text-utc-gold-500" href={{blog}} target="_self" aria-label="Go to our departmental blog" title="Go to our departmental blog">
 						<span class="fa fa-home fa-2x"></span>
 					</a>
 				</li>
 			{% endif %}
 			{% if linkedin != "empty" %}
 				<li class="inline horizontal px-2">
-					<a class="text-utc-blue-500 hover:text-utc-gold-500" href={{linkedin}} target="_self" aria-label="Find us on LinkedIn" title="Find us on LinkedIn">
+					<a class="text-utc-blue-500 hover:text-utc-gold-500" href={{'https://www.linkedin.com/'+ linkedin}} target="_self" aria-label="Find us on LinkedIn" title="Find us on LinkedIn">
 						<span class="fa fa-linkedin fa-2x"></span>
 					</a>
 				</li>
 			{% endif %}
 			{% if youtube != "empty" %}
 				<li class="inline horizontal px-2">
-					<a class="text-utc-blue-500 hover:text-utc-gold-500" href={{youtube}} target="_self" aria-label="Find us on YouTube" title="Find us on YouTube">
+					<a class="text-utc-blue-500 hover:text-utc-gold-500" href={{'https://www.youtube.com/' + youtube}} target="_self" aria-label="Find us on YouTube" title="Find us on YouTube">
 						<span class="fa fa-youtube fa-2x"></span>
 					</a>
 				</li>
 			{% endif %}
-
+			{% if vimeo != "empty" %}
+				<li class="inline horizontal px-2">
+					<a class="text-utc-blue-500 hover:text-utc-gold-500" href={{'https://www.utc.edu/'+ vimeo}} target="_self" aria-label="Go to our vimeo page" title="Go to our vimeo page">
+						<span class="fa fa-vimeo fa-2x"></span>
+					</a>
+				</li>
+			{% endif %}
+			{% if podcast != "empty" %}
+				<li class="inline horizontal px-2">
+					<a class="text-utc-blue-500 hover:text-utc-gold-500" href={{podcast}} target="_self" aria-label="Go to our podcast" title="Go to our podcast">
+						<span class="fa fa-vimeo fa-2x"></span>
+					</a>
+				</li>
+			{% endif %}
 			{% if twitter != "empty" %}
 				<li class="inline horizontal px-2">
-					<a class="text-utc-blue-500 hover:text-utc-gold-500" href={{twitter}} target="_self" aria-label="Find us on Twitter" title="Find us on Twitter">
+					<a class="text-utc-blue-500 hover:text-utc-gold-500" href={{'https://www.twitter.com/' + twitter}} target="_self" aria-label="Find us on Twitter" title="Find us on Twitter">
 						<span class="fa fa-twitter fa-2x"></span>
 					</a>
 				</li>
@@ -65,14 +85,14 @@
 
 			{% if instagram != "empty" %}
 				<li class="inline horizontal px-2">
-					<a class="text-utc-blue-500 hover:text-utc-gold-500" href={{instagram}} target="_self" aria-label="Find us on Instagram" title="Find us on Instagram">
+					<a class="text-utc-blue-500 hover:text-utc-gold-500" href={{'https://www.instagram.com/'+ instagram}} target="_self" aria-label="Find us on Instagram" title="Find us on Instagram">
 						<span class="fa fa-instagram fa-2x"></span>
 					</a>
 				</li>
 			{% endif %}
 			{% if facebook != "empty" %}
 				<li class="inline horizontal px-2">
-					<a class="text-utc-blue-500 hover:text-utc-gold-500" href={{facebook}} target="_self" aria-label="Find us on facebook" title="Find us on facebook">
+					<a class="text-utc-blue-500 hover:text-utc-gold-500" href={{'https://www.facebook.com/'+ facebook}} target="_self" aria-label="Find us on facebook" title="Find us on facebook">
 						<span class="fa fa-facebook fa-2x"></span>
 					</a>
 				</li>
