@@ -107,6 +107,8 @@ function public_http_get_response($organizationalSectionID)
         'linkedin' => isset($api_response[0]['field_utc_department_socialmedia'][0]['platform_values']['linkedin']['value'])? $api_response[0]['field_utc_department_socialmedia'][0]['platform_values']['linkedin']['value']: "empty",
         'homepage' => isset($api_response[0]['field_utc_department_socialmedia'][0]['platform_values']['departamental_homepage']['value'])? $api_response[0]['field_utc_department_socialmedia'][0]['platform_values']['departamental_homepage']['value']: "empty",
         'vimeo' => isset($api_response[0]['field_utc_department_socialmedia'][0]['platform_values']['vimeo']['value'])?$api_response[0]['field_utc_department_socialmedia'][0]['platform_values']['vimeo']['value']: "empty",
+        'podcast' => isset($api_response[0]['field_utc_department_socialmedia'][0]['platform_values']['podcast']['value'])?$api_response[0]['field_utc_department_socialmedia'][0]['platform_values']['podcast']['value']: "empty",
+        'blog' => isset($api_response[0]['field_utc_department_socialmedia'][0]['platform_values']['blog']['value'])?$api_response[0]['field_utc_department_socialmedia'][0]['platform_values']['blog']['value']: "empty",
         'officehours' => !empty($api_response[0]['field_utc_department_hours'])? $api_response[0]['field_utc_department_hours']: "empty"
         ]
     );
