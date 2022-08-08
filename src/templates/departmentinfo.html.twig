@@ -24,6 +24,11 @@
 					<i class="fas fa-fax"></i>&nbsp;<a class="dpt-link text-utc-blue-700 hover:bg-white" href="{{faxnumber}}">{{faxnumber}}</a>
 				</div>
 			{% endif %}
+			{% if email != "empty" %}
+				<div id="dpt-email" class="utc-dpt dpt-email separate">
+					<a class="hover:bg-white hover:text-utc-blue-700" href="{{email}}">{{email}}</a>
+				</div>
+			{% endif %}
 		</address>
 	</div>
 	<div class="mt-6">

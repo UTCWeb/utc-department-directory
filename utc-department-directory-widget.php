@@ -96,6 +96,7 @@ function public_http_get_response($organizationalSectionID)
         'mailcode' => isset($api_response[0]['field_utc_department_mail_code'][0]['value'])? $api_response[0]['field_utc_department_mail_code'][0]['value']: "empty",
         'phonenumber' => isset($api_response[0]['field_utc_department_phone'][0]['value'])? $api_response[0]['field_utc_department_phone'][0]['value']: "empty",
         'faxnumber' => isset($api_response[0]['field_utc_department_fax_number'][0]['value'])? $api_response[0]['field_utc_department_fax_number'][0]['value']: "empty",
+        'email' => isset($api_response[0]['field_utc_department_email'][0]['value'])? $api_response[0]['field_utc_department_email'][0]['value']: "empty",
         'buildingtitle' => isset($api_response[0]['field_utc_department_building'][0]['title'])? $api_response[0]['field_utc_department_building'][0]['title']: "empty",
         'buildinguri' => isset($api_response[0]['field_utc_department_building'][0]['uri'])? $api_response[0]['field_utc_department_building'][0]['uri']: "empty",
         'address' => isset($api_response[0]['field_utc_department_street_addr'][0]['title'])? $api_response[0]['field_utc_department_street_addr'][0]['title']: "empty",
